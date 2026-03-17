@@ -11,9 +11,6 @@ RUN npm install
 # Copy all source files
 COPY . .
 
-# Build the Astro app
-RUN npm run build
-
 # Expose the port Astro server will run on
 EXPOSE 4321
 
