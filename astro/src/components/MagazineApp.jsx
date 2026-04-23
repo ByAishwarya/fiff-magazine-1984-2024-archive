@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import MagazineArchive from "./Searchbar";
 import ContentGrid from "./ContentGrid";
+import IssueModal from "./IssueModal";
 
 function MagazineApp() {
   const [selectedYear, setSelectedYear] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 1500);
   }, []);
+
+  function handleIssueClick(issue) {
+    setSelectedIssue(issue);
+  }
+
+  function handleModalClose() {
+    setSelectedIssue(null);
+  }
 
   return (
     <div className="min-h-screen">
@@ -18,8 +28,13 @@ function MagazineApp() {
         </div>
       ) : (
         <MagazineArchive onYearSelect={setSelectedYear} selectedYear={selectedYear}>
-          {selectedYear && <ContentGrid selectedYear={selectedYear} />}
+          {selectedYear && (
+            <ContentGrid selectedYear={selectedYear} onIssueClick={handleIssueClick} />
+          )}
         </MagazineArchive>
+      )}
+      {selectedIssue && (
+        <IssueModal issue={selectedIssue} onClose={handleModalClose} />
       )}
     </div>
   );

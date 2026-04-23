@@ -33,7 +33,8 @@ services:
     ports:
       - 4321:4321
     volumes:
-      - ./astro:/usr/src/app  # Useful for development
+      - ./astro:/app
+      - /app/node_modules
     depends_on:
       - web
     networks:

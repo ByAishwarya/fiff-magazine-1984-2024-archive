@@ -30,10 +30,10 @@ class MagazineArticle(models.Model):
     publication_year = models.DateField()
     articles = models.ManyToManyField('Author', through='AuthorArticle')
     tags = models.ManyToManyField('Tag', through='ArticleTag')
-
+    title = models.CharField(max_length=300, blank=True, default='')
 
 class Author(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
     articles = models.ManyToManyField('MagazineArticle', through='AuthorArticle')
 
 class AuthorArticle(models.Model):

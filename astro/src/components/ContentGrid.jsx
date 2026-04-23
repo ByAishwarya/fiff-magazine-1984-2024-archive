@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function ContentGrid({ selectedYear }) {
+function ContentGrid({ selectedYear, onIssueClick }) {
   const [issues, setIssues] = useState([]);
 
   const API_URL = "http://localhost:8000/magazine_issue/";
@@ -36,7 +36,11 @@ function ContentGrid({ selectedYear }) {
             const issueNum = item.issue_number.join(", ");
 
             return (
-              <a key={index} href={"/magazine_issues/" + item.url.split("/")[4]} className="group block">
+              <div
+                key={index}
+                onClick={function () { if (onIssueClick) onIssueClick(item); }}
+                className="group block cursor-pointer"
+              >
                 <div className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                   <img
                     src={item.front_cover}
@@ -51,7 +55,7 @@ function ContentGrid({ selectedYear }) {
                 <h3 className="mt-1 text-base font-semibold text-gray-900 group-hover:text-gray-600 transition-colors">
                   {month} {year}
                 </h3>
-              </a>
+              </div>
             );
           })
         ) : (

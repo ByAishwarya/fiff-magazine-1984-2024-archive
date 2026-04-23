@@ -23,7 +23,9 @@ def get_q_object_for_issue_range(issue_range, parsed_issue_param):
 
 
 class MagazineIssueViewSet(ModelViewSet):
-    queryset = MagazineIssue.objects.all()
+    queryset = MagazineIssue.objects.prefetch_related(
+        'magazinearticle_set__articles'
+    ).all()
     serializer_class = MagazineIssueSerializer
 
     def list(self, request):
