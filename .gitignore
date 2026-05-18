@@ -145,3 +145,6 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# Claude Code local settings
+.claude/settings.local.json

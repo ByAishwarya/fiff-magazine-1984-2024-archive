@@ -2,6 +2,7 @@ from catalog.models import MagazineIssue
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework import status
 from collections import defaultdict
 from django.db.models import Q
 
@@ -127,3 +128,54 @@ class MagazineIssueViewSet(ModelViewSet):
         serializer_output = self.serializer_class(queryset, many=True, context={'request': request}).data
 
         return Response(serializer_output)
+
+    @action(detail=False, methods=['get'])
+    def by_entity(self, request):
+        """
+        Return magazine issues filtered by a related entity, grouped by year.
+        Query params:
+          type  — 'author', 'tag', or 'article'
+          id    — integer pk of the entity
+        Response shape: { "1988": [...issues], "2001": [...issues] }
+        """
+        entity_type = request.query_params.get('type', '').strip()
+        entity_id   = request.query_params.get('id', '').strip()
+
+        if not entity_type or not entity_id:
+            return Response(
+                {'error': 'type and id query params are required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            entity_id = int(entity_id)
+        except ValueError:
+            return Response(
+                {'error': 'id must be an integer'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        qs = self.get_queryset()
+
+        if entity_type == 'author':
+            # MagazineArticle.articles is the M2M field pointing to Author
+            qs = qs.filter(magazinearticle__articles__id=entity_id).distinct()
+        elif entity_type == 'tag':
+            qs = qs.filter(magazinearticle__tags__id=entity_id).distinct()
+        elif entity_type == 'article':
+            qs = qs.filter(magazinearticle__id=entity_id).distinct()
+        else:
+            return Response(
+                {'error': "type must be 'author', 'tag', or 'article'"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        qs = qs.order_by('publication_date')
+        serializer_output = self.serializer_class(qs, many=True, context={'request': request}).data
+
+        grouped = defaultdict(list)
+        for issue in serializer_output:
+            year = issue['publication_date'].split('/')[1]
+            grouped[year].append(issue)
+
+        return Response(grouped)

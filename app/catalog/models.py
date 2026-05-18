@@ -3,9 +3,9 @@ import os
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.indexes import GinIndex
 from django.conf import settings
 
-#COVERS_STORAGE = FileSystemStorage(location="/media/covers")
 COVERS_STORAGE = FileSystemStorage(location=settings.MEDIA_ROOT)
 
 class MagazineIssue(models.Model):
@@ -23,7 +23,7 @@ class MagazineIssue(models.Model):
     def __str__(self):
         issues = list(map(lambda x: str(x), self.issue_number))
         return f"Issue: {','.join(issues)} - Publication_Date: {self.get_publication_date()}"
-        
+
 
 class MagazineArticle(models.Model):
     issue = models.ForeignKey('MagazineIssue', on_delete=models.CASCADE)
@@ -32,9 +32,29 @@ class MagazineArticle(models.Model):
     tags = models.ManyToManyField('Tag', through='ArticleTag')
     title = models.CharField(max_length=300, blank=True, default='')
 
+    class Meta:
+        indexes = [
+            GinIndex(
+                fields=['title'],
+                name='article_title_gin_trgm_idx',
+                opclasses=['gin_trgm_ops'],
+            ),
+        ]
+
+
 class Author(models.Model):
     name = models.CharField(max_length=200)
     articles = models.ManyToManyField('MagazineArticle', through='AuthorArticle')
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                fields=['name'],
+                name='author_name_gin_trgm_idx',
+                opclasses=['gin_trgm_ops'],
+            ),
+        ]
+
 
 class AuthorArticle(models.Model):
     author = models.ForeignKey('Author', on_delete=models.CASCADE)
@@ -50,7 +70,16 @@ class ArticleTag(models.Model):
 
     def __str__(self):
         return f"{self.tag.__str__()} - {self.article.__str__()}"
- 
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                fields=['name'],
+                name='tag_name_gin_trgm_idx',
+                opclasses=['gin_trgm_ops'],
+            ),
+        ]

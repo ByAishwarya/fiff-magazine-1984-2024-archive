@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from rest_framework import routers
 
 from catalog.views import MagazineIssueViewSet
+from catalog.search_views import GlobalSearchView
 
 router = routers.DefaultRouter()
 router.register(r'magazine_issue', MagazineIssueViewSet)
@@ -13,6 +14,7 @@ router.register(r'magazine_issue', MagazineIssueViewSet)
 urlpatterns = [
     #path("", image_upload, name="upload"),
     path('', include(router.urls)),
+    path("search/", GlobalSearchView.as_view(), name="global-search"),
     path("admin/", admin.site.urls),
 ]
 
