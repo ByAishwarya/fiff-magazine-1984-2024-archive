@@ -3,7 +3,7 @@ import React from "react";
 function HeroSection() {
     const handleRandomIssue = async () => {
         try {
-            const response = await fetch("http://localhost:8000/magazine_issue/");
+            const response = await fetch(`${import.meta.env.PUBLIC_API_URL ?? "http://localhost:8000"}/magazine_issue/`);
             if (response.ok) {
                 const data = await response.json();
                 const years = Object.keys(data);

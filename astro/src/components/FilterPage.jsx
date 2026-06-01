@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import ContentGrid from "./ContentGrid";
 import FilterPageContent from "./FilterPageContent";
 
-const API_URL = "http://localhost:8000/magazine_issue/search/";
-const FILTER_API_URL = "http://localhost:8000/magazine_issue/filter_values/";
+const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8000";
+const API_URL = `${API_BASE}/magazine_issue/search/`;
+const FILTER_API_URL = `${API_BASE}/magazine_issue/filter_values/`;
 
 const FilterPage = () => {
   const [filterType, setFilterType] = useState("month");

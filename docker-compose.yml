@@ -20,7 +20,7 @@ services:
     volumes:
       - ./app/:/usr/src/app/
     ports:
-      - 8000:8000
+      - 8500:8000
     env_file:
       - ./.env.dev
     depends_on:
@@ -32,6 +32,8 @@ services:
     build: ./astro
     ports:
       - 3000:4321
+    environment:
+      - PUBLIC_API_URL=http://localhost:8500
     volumes:
       - ./astro:/app
       - /app/node_modules

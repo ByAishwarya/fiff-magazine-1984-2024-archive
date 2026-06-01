@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 function ContentGrid({ selectedYear, onIssueClick }) {
   const [issues, setIssues] = useState([]);
 
-  const API_URL = "http://localhost:8000/magazine_issue/";
+  const API_URL = `${import.meta.env.PUBLIC_API_URL ?? "http://localhost:8000"}/magazine_issue/`;
 
   useEffect(() => {
     const fetchData = async () => {
